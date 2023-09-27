@@ -47,18 +47,18 @@ const activitiesCost = document.getElementById('activities-cost');
 const activitiesCheckboxes = activities.querySelectorAll('input[type="checkbox"]');
 let totalCost = 0;
 
+
 activities.addEventListener('change', (e) => {
-    const clicked = e.target;
+    const clicked = e.target; // The checkbox that was clicked/changed
+    const clickedTime = clicked.getAttribute('data-day-and-time');
     const clickedCost = parseInt(clicked.getAttribute('data-cost'));
-    if (clicked.checked) {
-        totalCost += clickedCost;
-    } else {
-        totalCost -= clickedCost;
-    }
-    activitiesCost.innerHTML = `Total: $${totalCost}`;
+
+    // Check for conflicting activity times
     for (let i = 0; i < activitiesCheckboxes.length; i++) {
         const checkbox = activitiesCheckboxes[i];
         const checkboxTime = checkbox.getAttribute('data-day-and-time');
+
+        // If the current checkbox time conflicts with the clicked checkbox's time
         if (clicked !== checkbox && clickedTime === checkboxTime) {
             if (clicked.checked) {
                 checkbox.disabled = true;
@@ -69,6 +69,14 @@ activities.addEventListener('change', (e) => {
             }
         }
     }
+
+    // Update the total cost
+    if (clicked.checked) {
+        totalCost += clickedCost;
+    } else {
+        totalCost -= clickedCost;
+    }
+    activitiesCost.innerHTML = `Total: $${totalCost}`;
 });
 
 // Step 5: Add a change event listener to the payment select element
@@ -158,18 +166,46 @@ activities.addEventListener('blur', (e) => {
     }
 }, true);
 
+// Create and insert the feedback element for email input
+const emailFeedbackElement = document.createElement('span');
+emailFeedbackElement.className = 'email-feedback';
+emailInput.insertAdjacentElement('afterend', emailFeedbackElement);
+
+// Real-Time Error Messages for the email field
+emailInput.addEventListener('keyup', (e) => {
+    const validationMessage = isValidEmailDetailed(e.target.value);
+    
+    if (validationMessage !== true) {
+        emailInput.parentElement.classList.add('not-valid');
+        emailFeedbackElement.textContent = validationMessage;
+        emailFeedbackElement.style.display = "block"; // Show it when there's an error
+    } else {
+        emailInput.parentElement.classList.remove('not-valid');
+        emailFeedbackElement.textContent = "";
+        emailFeedbackElement.style.display = "none"; // Hide it when there's no error
+    }
+});
+
+
+// Helper function for conditional email validation messages
+function isValidEmailDetailed(email) {
+    if (email === "") {
+        return "Please enter an email address.";
+    }
+    if (!/^[^@]+@[^@.]+\.[a-z]+$/i.test(email)) {
+        return "Please enter a valid email address.";
+    }
+    return true;
+}
+
+
 // Step 9: Validating input elements and their corresponding validation functions
 const inputValidations = {
     'cc-num': isValidCardNumber,
     'zip': isValidZip,
     'cvv': isValidCvv,
-    'email': isValidEmail,
     'name': isValidName,
     'other-job-role': isValidName,
-    'design': isValidActivities,
-    'payment': isValidActivities,
-    'color': isValidActivities,
-    'title': isValidActivities,
 };
 
 // Keyup event listener for form element (Event Delegation)
@@ -180,6 +216,7 @@ form.addEventListener('keyup', (e) => {
 
     if (validationFunction) {
         const isValid = validationFunction(inputElement.value);
+
         if (isValid) {
             inputElement.parentElement.classList.remove('not-valid');
         } else {
@@ -188,14 +225,40 @@ form.addEventListener('keyup', (e) => {
     }
 });
 
-// For the activities section
-activities.addEventListener('keyup', (e) => {
-    const isValid = isValidActivities();
-    if (isValid) {
-        activities.classList.remove('not-valid');
-    } else {
-        activities.classList.add('not-valid');
-    }
-});
 
+
+// Helper functions
+function isValidName(name) {
+    return /^[a-zA-Z]+ ?[a-zA-Z]*? ?[a-zA-Z]*?$/.test(name);
+}
+
+function isValidCardNumber(cardNumber) {
+    return /^\d{13,16}$/.test(cardNumber);
+}
+
+function isValidZip(zip) {
+    return /^\d{5}$/.test(zip);
+}
+
+function isValidCvv(cvv) {
+    return /^\d{3}$/.test(cvv);
+}
+
+function isValidActivities() {
+    const checkedActivities = activities.querySelectorAll('input[type="checkbox"]:checked');
+    return checkedActivities.length > 0;
+}
+
+function isValidPayment() {
+    return paymentSelect.value !== 'select method';
+}
+
+// Accessibility enhancements
+// Step 10: Add a focus event listener to the activities section
+activities.addEventListener('focus', (e) => {
+    const clicked = e.target;
+    if (clicked.type === 'checkbox') {
+        clicked.parentElement.classList.add('focus');
+    }
+}, true);
 
