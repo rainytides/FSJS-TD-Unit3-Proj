@@ -81,33 +81,31 @@ activities.addEventListener('change', (e) => {
 
 // Step 5: Add a change event listener to the payment select element
 const paymentSelect = document.getElementById('payment');
-const creditCardDiv = document.getElementById('credit-card');
-const paypalDiv = document.getElementById('paypal');
-const bitcoinDiv = document.getElementById('bitcoin');
+const paymentMapping = {
+    'credit-card': document.getElementById('credit-card'),
+    'paypal': document.getElementById('paypal'),
+    'bitcoin': document.getElementById('bitcoin')
+};
 
-// Initially hide the "Select Payment Method" option
-paymentSelect.children[0].hidden = true;
-
-// Initially hide the paypal and bitcoin divs
-paypalDiv.hidden = true;
-bitcoinDiv.hidden = true;
-
+// Initially hide the "Select Payment Method" option and other payment methods
+paymentSelect.children[0].classList.add('hidden');
+for (let method in paymentMapping) {
+    paymentMapping[method].classList.add('hidden');
+}
 paymentSelect.addEventListener('change', (e) => {
     const selectedPayment = e.target.value;
-    if (selectedPayment === 'credit-card') {
-        creditCardDiv.hidden = false;
-        paypalDiv.hidden = true;
-        bitcoinDiv.hidden = true;
-    } else if (selectedPayment === 'paypal') {
-        creditCardDiv.hidden = true;
-        paypalDiv.hidden = false;
-        bitcoinDiv.hidden = true;
-    } else if (selectedPayment === 'bitcoin') {
-        creditCardDiv.hidden = true;
-        paypalDiv.hidden = true;
-        bitcoinDiv.hidden = false;
+    
+    // Hide all payment methods first
+    for (let method in paymentMapping) {
+        paymentMapping[method].classList.add('hidden');
+    }
+
+    // Show the selected payment method
+    if (paymentMapping[selectedPayment]) {
+        paymentMapping[selectedPayment].classList.remove('hidden');
     }
 });
+
 
 // Step 6: Add a submit event listener to the form element
 const form = document.querySelector('form');
@@ -205,7 +203,7 @@ const inputValidations = {
     'zip': isValidZip,
     'cvv': isValidCvv,
     'name': isValidName,
-    'other-job-role': isValidName,
+    'other-job-role': isValidOtherJobRole,
 };
 
 // Keyup event listener for form element (Event Delegation)
