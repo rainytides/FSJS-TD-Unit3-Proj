@@ -1,7 +1,7 @@
 # FSJS-TD-Unit3-Proj
  This is the third project for the Treehouse techdegree requirement. It is an interactive form that helps a user sign up for a multi-day, multi-session conference and provide payment using different options.
 
-****Real-Time Error Messages**
+**Real-Time Error Messages**
 1. As part of enhancing the user experience, real-time validation on form fields has been implemented. As soon as a user starts typing or modifies the input content, immediate feedback is provided.
 2. This feature helps users correct errors on-the-fly, without having to wait until form submission to see what went wrong. One area where it is super useful is the email address section.
 
