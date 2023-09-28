@@ -104,56 +104,50 @@ paymentSelect.addEventListener('change', (e) => {
 
 // Step 6: Add a submit event listener to the form element
 const form = document.querySelector('form');
-const emailInput = document.getElementById('email');
-const cardNumberInput = document.getElementById('cc-num');
-const zipInput = document.getElementById('zip');
-const cvvInput = document.getElementById('cvv');
+const emailInput = document.querySelector('#email'); // Assuming the email input has an id of 'email'
 
-form.addEventListener('submit', (e) => {
-    if (!isValidName(nameInput.value) || nameInput.value.trim() === "") {
-        e.preventDefault();
-        nameInput.parentElement.classList.add('not-valid');
-    } else {
-        nameInput.parentElement.classList.remove('not-valid');
-    }
-
-    if (!isValidEmailDetailed(emailInput.value) || emailInput.value.trim() === "") {
-        e.preventDefault();
+// Real-time email validation
+emailInput.addEventListener('input', () => {
+    if (!isValidEmailDetailed(emailInput.value)) {
         emailInput.parentElement.classList.add('not-valid');
     } else {
         emailInput.parentElement.classList.remove('not-valid');
     }
+});
 
+form.addEventListener('submit', (e) => {
+    if (!isValidName(nameInput.value)) {
+        e.preventDefault();
+        nameInput.parentElement.classList.add('not-valid');
+    }
+    if (!isValidEmailDetailed(emailInput.value)) {
+        e.preventDefault();
+        emailInput.parentElement.classList.add('not-valid');
+    }
     if (!isValidActivities()) {
         e.preventDefault();
         activities.classList.add('not-valid');
-    } else {
-        activities.classList.remove('not-valid');
     }
-
+    if (!isValidPayment()) {
+        e.preventDefault();
+        paymentSelect.parentElement.classList.add('not-valid');
+    }
     if (paymentSelect.value === 'credit-card') {
         if (!isValidCardNumber(cardNumberInput.value)) {
             e.preventDefault();
             cardNumberInput.parentElement.classList.add('not-valid');
-        } else {
-            cardNumberInput.parentElement.classList.remove('not-valid');
         }
-        
         if (!isValidZip(zipInput.value)) {
             e.preventDefault();
             zipInput.parentElement.classList.add('not-valid');
-        } else {
-            zipInput.parentElement.classList.remove('not-valid');
         }
-        
         if (!isValidCvv(cvvInput.value)) {
             e.preventDefault();
             cvvInput.parentElement.classList.add('not-valid');
-        } else {
-            cvvInput.parentElement.classList.remove('not-valid');
         }
     }
 });
+
 
 // Step 7: Add a focus event listener to the activities section
 activities.addEventListener('focus', (e) => {
@@ -171,7 +165,7 @@ activities.addEventListener('blur', (e) => {
     }
 }, true);
 
-// Step 9: Real-Time Error Messages for the email field
+// Step 9: Real-Time Error Messages for the email and credit card fields
 const emailFeedbackElement = document.createElement('span');
 emailFeedbackElement.className = 'email-feedback';
 emailInput.insertAdjacentElement('afterend', emailFeedbackElement);
@@ -190,21 +184,115 @@ emailInput.addEventListener('keyup', (e) => {
     }
 });
 
+// Real-Time Error Messages for the credit card number field
+const cardNumberInput = document.getElementById('cc-num'); // Assuming the credit card input has an id of 'cc-num'
+const cardNumberFeedbackElement = document.createElement('span');
+cardNumberFeedbackElement.className = 'card-number-feedback';
+cardNumberInput.insertAdjacentElement('afterend', cardNumberFeedbackElement);
+
+cardNumberInput.addEventListener('keyup', (e) => {
+    const validationMessage = isValidCardNumberDetailed(e.target.value);
+    
+    if (validationMessage !== true) {
+        cardNumberInput.parentElement.classList.add('not-valid');
+        cardNumberFeedbackElement.textContent = validationMessage;
+        cardNumberFeedbackElement.style.display = "block";
+    } else {
+        cardNumberInput.parentElement.classList.remove('not-valid');
+        cardNumberFeedbackElement.textContent = "";
+        cardNumberFeedbackElement.style.display = "none";
+    }
+});
+
+function isValidCardNumberDetailed(cardNumber) {
+    if (!cardNumber) {
+        return "Please enter a credit card number.";
+    }
+    if (!/^\d+$/.test(cardNumber)) {
+        return "Credit card number must be numeric.";
+    }
+    if (!/^\d{13,16}$/.test(cardNumber)) {
+        return "Credit card number must be between 13 and 16 digits.";
+    }
+    return true;
+}
+
+// Event listener for the form submit to reload the page
+form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    window.location.reload();
+});
+
+// Real-Time Error Messages for the Zip Code field
+const zipInput = document.getElementById('zip');
+const zipFeedbackElement = document.createElement('span');
+zipFeedbackElement.className = 'zip-feedback';
+zipInput.insertAdjacentElement('afterend', zipFeedbackElement);
+
+zipInput.addEventListener('keyup', (e) => {
+    const validationMessage = isValidZipDetailed(e.target.value);
+
+    if (validationMessage !== true) {
+        zipInput.parentElement.classList.add('not-valid');
+        zipFeedbackElement.textContent = validationMessage;
+        zipFeedbackElement.style.display = "block";
+    } else {
+        zipInput.parentElement.classList.remove('not-valid');
+        zipFeedbackElement.textContent = "";
+        zipFeedbackElement.style.display = "none";
+    }
+});
+
+function isValidZipDetailed(zip) {
+    if (!zip) {
+        return "Please enter a zip code.";
+    }
+    if (!/^\d+$/.test(zip)) {
+        return "Zip code must be numeric.";
+    }
+    if (zip.length !== 5) {
+        return "Zip code must be 5 digits.";
+    }
+    return true;
+}
+
+// Real-Time Error Messages for the CVV field
+const cvvInput = document.getElementById('cvv');
+const cvvFeedbackElement = document.createElement('span');
+cvvFeedbackElement.className = 'cvv-feedback';
+cvvInput.insertAdjacentElement('afterend', cvvFeedbackElement);
+
+cvvInput.addEventListener('keyup', (e) => {
+    const validationMessage = isValidCvvDetailed(e.target.value);
+
+    if (validationMessage !== true) {
+        cvvInput.parentElement.classList.add('not-valid');
+        cvvFeedbackElement.textContent = validationMessage;
+        cvvFeedbackElement.style.display = "block";
+    } else {
+        cvvInput.parentElement.classList.remove('not-valid');
+        cvvFeedbackElement.textContent = "";
+        cvvFeedbackElement.style.display = "none";
+    }
+});
+
+function isValidCvvDetailed(cvv) {
+    if (!cvv) {
+        return "Please enter a CVV.";
+    }
+    if (!/^\d+$/.test(cvv)) {
+        return "CVV must be numeric.";
+    }
+    if (cvv.length !== 3) {
+        return "CVV must be 3 digits.";
+    }
+    return true;
+}
+
+
 // Helper functions
 function isValidName(name) {
     return /^[a-zA-Z]+ ?[a-zA-Z]*? ?[a-zA-Z]*?$/.test(name);
-}
-
-function isValidCardNumber(cardNumber) {
-    return /^\d{13,16}$/.test(cardNumber);
-}
-
-function isValidZip(zip) {
-    return /^\d{5}$/.test(zip);
-}
-
-function isValidCvv(cvv) {
-    return /^\d{3}$/.test(cvv);
 }
 
 function isValidActivities() {
@@ -225,6 +313,56 @@ function isValidEmailDetailed(email) {
     }
     return true;
 }
+
+// Validate Email
+emailInput.addEventListener('keyup', function() {
+    if (isValidEmailDetailed(emailInput.value) === true) {
+        emailInput.parentElement.classList.add('validation-checkmark');
+    } else {
+        emailInput.parentElement.classList.remove('validation-checkmark');
+    }
+});
+
+// Validate Credit Card Number
+cardNumberInput.addEventListener('keyup', function() {
+    if (isValidCardNumberDetailed(cardNumberInput.value) === true) {
+        cardNumberInput.parentElement.classList.add('validation-checkmark');
+    } else {
+        cardNumberInput.parentElement.classList.remove('validation-checkmark');
+    }
+});
+
+// Validate Zip Code
+zipInput.addEventListener('keyup', function() {
+    if (isValidZipDetailed(zipInput.value) === true) {
+        zipInput.parentElement.classList.add('validation-checkmark');
+    } else {
+        zipInput.parentElement.classList.remove('validation-checkmark');
+    }
+});
+
+// Validate CVV
+cvvInput.addEventListener('keyup', function() {
+    if (isValidCvvDetailed(cvvInput.value) === true) {
+        cvvInput.parentElement.classList.add('validation-checkmark');
+    } else {
+        cvvInput.parentElement.classList.remove('validation-checkmark');
+    }
+});
+
+// Validate Name
+const nameFeedbackElement = document.createElement('span');
+nameFeedbackElement.className = 'name-feedback';
+nameInput.insertAdjacentElement('afterend', nameFeedbackElement);
+
+nameInput.addEventListener('keyup', function() {
+    if (isValidName(nameInput.value)) {
+        nameInput.parentElement.classList.add('validation-checkmark');
+    } else {
+        nameInput.parentElement.classList.remove('validation-checkmark');
+    }
+});
+
 
 // Step 10: Validating input elements and their corresponding validation functions
 const inputValidations = {
@@ -252,11 +390,17 @@ form.addEventListener('keyup', (e) => {
     }
 });
 
-// Accessibility enhancements
+// Section 11: Accessibility enhancements
 activities.addEventListener('focus', (e) => {
     const clicked = e.target;
     if (clicked.type === 'checkbox') {
         clicked.parentElement.classList.add('focus');
     }
 }, true);
+
+//Section 12: Register button functionality
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    location.reload();
+});
 
