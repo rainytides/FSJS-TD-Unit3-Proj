@@ -108,7 +108,7 @@ const emailInput = document.querySelector('#email'); // Assuming the email input
 
 // Real-time email validation
 emailInput.addEventListener('input', () => {
-    if (!isValidEmailDetailed(emailInput.value)) {
+    if (!isValidEmail(emailInput.value)) {
         emailInput.parentElement.classList.add('not-valid');
     } else {
         emailInput.parentElement.classList.remove('not-valid');
@@ -120,7 +120,7 @@ form.addEventListener('submit', (e) => {
         e.preventDefault();
         nameInput.parentElement.classList.add('not-valid');
     }
-    if (!isValidEmailDetailed(emailInput.value)) {
+    if (!isValidEmail(emailInput.value)) {
         e.preventDefault();
         emailInput.parentElement.classList.add('not-valid');
     }
@@ -171,7 +171,7 @@ emailFeedbackElement.className = 'email-feedback';
 emailInput.insertAdjacentElement('afterend', emailFeedbackElement);
 
 emailInput.addEventListener('keyup', (e) => {
-    const validationMessage = isValidEmailDetailed(e.target.value);
+    const validationMessage = isValidEmail(e.target.value);
     
     if (validationMessage !== true) {
         emailInput.parentElement.classList.add('not-valid');
@@ -191,7 +191,7 @@ cardNumberFeedbackElement.className = 'card-number-feedback';
 cardNumberInput.insertAdjacentElement('afterend', cardNumberFeedbackElement);
 
 cardNumberInput.addEventListener('keyup', (e) => {
-    const validationMessage = isValidCardNumberDetailed(e.target.value);
+    const validationMessage = isValidCardNumber(e.target.value);
     
     if (validationMessage !== true) {
         cardNumberInput.parentElement.classList.add('not-valid');
@@ -204,7 +204,7 @@ cardNumberInput.addEventListener('keyup', (e) => {
     }
 });
 
-function isValidCardNumberDetailed(cardNumber) {
+function isValidCardNumber(cardNumber) {
     if (!cardNumber) {
         return "Please enter a credit card number.";
     }
@@ -230,7 +230,7 @@ zipFeedbackElement.className = 'zip-feedback';
 zipInput.insertAdjacentElement('afterend', zipFeedbackElement);
 
 zipInput.addEventListener('keyup', (e) => {
-    const validationMessage = isValidZipDetailed(e.target.value);
+    const validationMessage = isValidZip(e.target.value);
 
     if (validationMessage !== true) {
         zipInput.parentElement.classList.add('not-valid');
@@ -243,7 +243,7 @@ zipInput.addEventListener('keyup', (e) => {
     }
 });
 
-function isValidZipDetailed(zip) {
+function isValidZip(zip) {
     if (!zip) {
         return "Please enter a zip code.";
     }
@@ -263,7 +263,7 @@ cvvFeedbackElement.className = 'cvv-feedback';
 cvvInput.insertAdjacentElement('afterend', cvvFeedbackElement);
 
 cvvInput.addEventListener('keyup', (e) => {
-    const validationMessage = isValidCvvDetailed(e.target.value);
+    const validationMessage = isValidCvv(e.target.value);
 
     if (validationMessage !== true) {
         cvvInput.parentElement.classList.add('not-valid');
@@ -276,7 +276,7 @@ cvvInput.addEventListener('keyup', (e) => {
     }
 });
 
-function isValidCvvDetailed(cvv) {
+function isValidCvv(cvv) {
     if (!cvv) {
         return "Please enter a CVV.";
     }
@@ -304,7 +304,7 @@ function isValidPayment() {
     return paymentSelect.value !== 'select method';
 }
 
-function isValidEmailDetailed(email) {
+function isValidEmail(email) {
     if (email === "") {
         return "Please enter an email address.";
     }
@@ -316,7 +316,7 @@ function isValidEmailDetailed(email) {
 
 // Validate Email
 emailInput.addEventListener('keyup', function() {
-    if (isValidEmailDetailed(emailInput.value) === true) {
+    if (isValidEmail(emailInput.value) === true) {
         emailInput.parentElement.classList.add('validation-checkmark');
     } else {
         emailInput.parentElement.classList.remove('validation-checkmark');
@@ -325,7 +325,7 @@ emailInput.addEventListener('keyup', function() {
 
 // Validate Credit Card Number
 cardNumberInput.addEventListener('keyup', function() {
-    if (isValidCardNumberDetailed(cardNumberInput.value) === true) {
+    if (isValidCardNumber(cardNumberInput.value) === true) {
         cardNumberInput.parentElement.classList.add('validation-checkmark');
     } else {
         cardNumberInput.parentElement.classList.remove('validation-checkmark');
@@ -334,7 +334,7 @@ cardNumberInput.addEventListener('keyup', function() {
 
 // Validate Zip Code
 zipInput.addEventListener('keyup', function() {
-    if (isValidZipDetailed(zipInput.value) === true) {
+    if (isValidZip(zipInput.value) === true) {
         zipInput.parentElement.classList.add('validation-checkmark');
     } else {
         zipInput.parentElement.classList.remove('validation-checkmark');
@@ -343,7 +343,7 @@ zipInput.addEventListener('keyup', function() {
 
 // Validate CVV
 cvvInput.addEventListener('keyup', function() {
-    if (isValidCvvDetailed(cvvInput.value) === true) {
+    if (isValidCvv(cvvInput.value) === true) {
         cvvInput.parentElement.classList.add('validation-checkmark');
     } else {
         cvvInput.parentElement.classList.remove('validation-checkmark');
@@ -370,7 +370,7 @@ const inputValidations = {
     'zip': isValidZip,
     'cvv': isValidCvv,
     'name': isValidName,
-    'other-job-role': isValidOtherJobRole, // Assuming you have defined this function elsewhere
+    'other-job-role': isValidOtherJobRole, 
 };
 
 // Keyup event listener for form element (Event Delegation)
