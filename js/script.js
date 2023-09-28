@@ -369,8 +369,7 @@ const inputValidations = {
     'cc-num': isValidCardNumber,
     'zip': isValidZip,
     'cvv': isValidCvv,
-    'name': isValidName,
-    'other-job-role': isValidOtherJobRole, 
+    'name': isValidName, 
 };
 
 // Keyup event listener for form element (Event Delegation)
