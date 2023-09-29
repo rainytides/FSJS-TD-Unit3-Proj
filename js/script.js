@@ -1,247 +1,307 @@
-// -------------------
-// Global Variables
-// -------------------
-const form = document.querySelector('form');
+// Focus on the Name input field when the page loads
 const nameInput = document.getElementById('name');
-const emailInput = document.getElementById('email');
-const jobRoleSelect = document.getElementById('title');
-const otherJobRoleInput = document.getElementById('other-job-role');
-const designSelect = document.getElementById('design');
-const colorSelect = document.getElementById('color');
-const colorOptions = colorSelect.children;
-const activities = document.getElementById('activities');
-const activitiesCost = document.getElementById('activities-cost');
-const activitiesCheckboxes = activities.querySelectorAll('input[type="checkbox"]');
-const paymentSelect = document.getElementById('payment');
-const paymentMapping = {
-    'credit-card': document.getElementById('credit-card'),
-    'paypal': document.getElementById('paypal'),
-    'bitcoin': document.getElementById('bitcoin')
-};
-const cardNumberInput = document.getElementById('cc-num');
-const zipInput = document.getElementById('zip');
-const cvvInput = document.getElementById('cvv');
-
-// Page Load Functions
 nameInput.focus();
 
-// Job Role Section
+// Hide the "Other" job role input initially
+const otherJobRoleInput = document.getElementById('other-job-role');
 otherJobRoleInput.style.display = 'none';
+
+// Listen for changes in the Job Role select field
+const jobRoleSelect = document.getElementById('title');
 jobRoleSelect.addEventListener('change', (e) => {
-    otherJobRoleInput.style.display = e.target.value === 'other' ? '' : 'none';
+    if (e.target.value === 'other') {
+        otherJobRoleInput.style.display = 'block';
+    } else {
+        otherJobRoleInput.style.display = 'none';
+    }
 });
 
-// T-Shirt Info Section (Design/Color)
+// Hide the "Select Theme" option element in the "Design" menu  
+const designSelect = document.getElementById('design');
+const designSelectOptions = designSelect.children;
+designSelectOptions[0].hidden = true;
+
+// Disable the "Color" select menu
+const colorSelect = document.getElementById('color');
 colorSelect.disabled = true;
+
+// Listen for changes in the Design select field
 designSelect.addEventListener('change', (e) => {
+    // Enable the "Color" select menu
     colorSelect.disabled = false;
-    for (let i = 0; i < colorOptions.length; i++) {
-        const option = colorOptions[i];
-        option.hidden = option.getAttribute('data-theme') !== e.target.value;
-        option.selected = !option.hidden;
+
+    // Show only the color options that match the design selected
+    for (let i = 0; i < colorSelect.children.length; i++) {
+        const colorOption = colorSelect.children[i];
+        const colorOptionDataTheme = colorOption.getAttribute('data-theme');
+
+        if (colorOptionDataTheme === e.target.value) {
+            colorOption.hidden = false;
+            colorOption.selected = true;
+        } else {
+            colorOption.hidden = true;
+            colorOption.selected = false;
+        }
     }
 });
 
-// Function to update the total cost of selected activities
-function updateActivitiesCost() {
-    let totalCost = 0;
-    for (let i = 0; i < activitiesCheckboxes.length; i++) {
-        const checkbox = activitiesCheckboxes[i];
-        if (checkbox.checked) {
-            totalCost += parseInt(checkbox.getAttribute('data-cost'));
-        }
+// Create a variable to store the total cost of the activities selected
+let totalCost = 0;
+
+// Create a variable to store the activities checkboxes
+const activitiesFieldset = document.getElementById('activities');
+const activitiesCheckboxes = activitiesFieldset.querySelectorAll('input[type="checkbox"]');
+const activitiesCost = document.getElementById('activities-cost');
+
+// Listen for changes in the activities checkboxes
+activitiesFieldset.addEventListener('change', (e) => {
+    const activityCost = parseInt(e.target.getAttribute('data-cost'));
+    const activityChecked = e.target.checked;
+
+    // Add or subtract the cost of the activity selected
+    if (activityChecked) {
+        totalCost += activityCost;
+    } else {
+        totalCost -= activityCost;
     }
+
+    // Display the total cost of the activities selected
     activitiesCost.innerHTML = `Total: $${totalCost}`;
-}
 
-// Register for Activities Section
-activities.addEventListener('change', (e) => {
-    const clicked = e.target;
-    const clickedTime = clicked.getAttribute('data-day-and-time');
-    const clickedCost = parseInt(clicked.getAttribute('data-cost'));
+    // Disable the activities that occur at the same time
+    const activityDayAndTime = e.target.getAttribute('data-day-and-time');
+
     for (let i = 0; i < activitiesCheckboxes.length; i++) {
-        const checkbox = activitiesCheckboxes[i];
-        if (checkbox !== clicked && checkbox.getAttribute('data-day-and-time') === clickedTime) {
-            checkbox.disabled = clicked.checked;
-            checkbox.parentElement.classList.toggle('disabled', clicked.checked);
+        const activityCheckbox = activitiesCheckboxes[i];
+        const activityCheckboxDayAndTime = activityCheckbox.getAttribute('data-day-and-time');
+
+        if (activityDayAndTime === activityCheckboxDayAndTime && e.target !== activityCheckbox) {
+            if (activityChecked) {
+                activityCheckbox.disabled = true;
+                activityCheckbox.parentElement.classList.add('disabled');
+            } else {
+                activityCheckbox.disabled = false;
+                activityCheckbox.parentElement.classList.remove('disabled');
+            }
         }
     }
-    updateActivitiesCost();
 });
 
-// Payment Info Section
-paymentSelect.children[0].classList.add('hidden');
-Object.values(paymentMapping).forEach(element => element.classList.add('hidden'));
-paymentSelect.value = 'credit-card';
-paymentMapping['credit-card'].classList.remove('hidden');
+// Create a variable to store the payment select field
+const paymentSelect = document.getElementById('payment');
+const paymentSelectOptions = paymentSelect.children;
+
+// Hide the "Select Payment Method" option element in the "Payment Info" menu
+paymentSelectOptions[0].hidden = true;
+
+// Hide the "PayPal" and "Bitcoin" div elements
+const paypalDiv = document.getElementById('paypal');
+paypalDiv.style.display = 'none';
+
+const bitcoinDiv = document.getElementById('bitcoin');
+bitcoinDiv.style.display = 'none';
+
+// Display the "Credit Card" div element by default
+const creditCardDiv = document.getElementById('credit-card');
+creditCardDiv.style.display = 'block';
+
+// Listen for changes in the payment select field
 paymentSelect.addEventListener('change', (e) => {
-    Object.values(paymentMapping).forEach(element => element.classList.add('hidden'));
-    if (paymentMapping[e.target.value]) paymentMapping[e.target.value].classList.remove('hidden');
+    // Display the payment method selected
+    if (e.target.value === 'credit-card') {
+        creditCardDiv.style.display = 'block';
+        paypalDiv.style.display = 'none';
+        bitcoinDiv.style.display = 'none';
+    } else if (e.target.value === 'paypal') {
+        creditCardDiv.style.display = 'none';
+        paypalDiv.style.display = 'block';
+        bitcoinDiv.style.display = 'none';
+    } else if (e.target.value === 'bitcoin') {
+        creditCardDiv.style.display = 'none';
+        paypalDiv.style.display = 'none';
+        bitcoinDiv.style.display = 'block';
+    }
 });
 
-// Form Validation
+// Create a variable to store the form element
+const form = document.querySelector('form');
+
+// Create a variable to store the name input field
+const nameInputField = document.getElementById('name');
+
+// Create a variable to store the email input field
+const emailInputField = document.getElementById('email');
+
+// Create a variable to store the activities checkboxes
+const activitiesCheckboxesFieldset = document.getElementById('activities');
+
+// Create a variable to store the credit card number input field
+const creditCardNumberInputField = document.getElementById('cc-num');
+
+// Create a variable to store the zip code input field
+const zipCodeInputField = document.getElementById('zip');
+
+// Create a variable to store the CVV input field
+const cvvInputField = document.getElementById('cvv');
+
+// Create a function to validate the name input field
+const validateName = () => {
+    const nameInputFieldValue = nameInputField.value;
+
+    if (nameInputFieldValue === '') {
+        nameInputField.parentElement.classList.add('not-valid');
+        nameInputField.parentElement.classList.remove('valid');
+        nameInputField.parentElement.lastElementChild.style.display = 'block';
+        return false;
+    } else {
+        nameInputField.parentElement.classList.add('valid');
+        nameInputField.parentElement.classList.remove('not-valid');
+        nameInputField.parentElement.lastElementChild.style.display = 'none';
+        return true;
+    }
+};
+
+// Create a function to validate the email input field
+const validateEmail = () => {
+    const emailInputFieldValue = emailInputField.value;
+    const emailRegex = /^[^@]+@[^@.]+\.[a-z]+$/i;
+
+    if (emailInputFieldValue === '') {
+        emailInputField.parentElement.classList.add('not-valid');
+        emailInputField.parentElement.classList.remove('valid');
+        emailInputField.parentElement.lastElementChild.style.display = 'block';
+        emailInputField.parentElement.lastElementChild.innerHTML = 'Email field cannot be blank';
+        return false;
+    } else if (!emailRegex.test(emailInputFieldValue)) {
+        emailInputField.parentElement.classList.add('not-valid');
+        emailInputField.parentElement.classList.remove('valid');
+        emailInputField.parentElement.lastElementChild.style.display = 'block';
+        emailInputField.parentElement.lastElementChild.innerHTML = 'Please enter a valid email address';
+        return false;
+    } else {
+        emailInputField.parentElement.classList.add('valid');
+        emailInputField.parentElement.classList.remove('not-valid');
+        emailInputField.parentElement.lastElementChild.style.display = 'none';
+        return true;
+    }
+};
+
+// Create a function to validate the activities checkboxes
+const validateActivities = () => {
+    const activitiesCheckboxesFieldsetLegend = activitiesCheckboxesFieldset.firstElementChild;
+
+    if (totalCost === 0) {
+        activitiesCheckboxesFieldsetLegend.classList.add('not-valid');
+        activitiesCheckboxesFieldsetLegend.classList.remove('valid');
+        activitiesCheckboxesFieldset.lastElementChild.style.display = 'block';
+        return false;
+    } else {
+        activitiesCheckboxesFieldsetLegend.classList.add('valid');
+        activitiesCheckboxesFieldsetLegend.classList.remove('not-valid');
+        activitiesCheckboxesFieldset.lastElementChild.style.display = 'none';
+        return true;
+    }
+};
+
+// Create a function to validate the credit card number input field
+const validateCreditCardNumber = () => {
+    const creditCardNumberInputFieldValue = creditCardNumberInputField.value;
+    const creditCardNumberRegex = /^\d{13,16}$/;
+
+    if (creditCardNumberInputFieldValue === '') {
+        creditCardNumberInputField.parentElement.classList.add('not-valid');
+        creditCardNumberInputField.parentElement.classList.remove('valid');
+        creditCardNumberInputField.parentElement.lastElementChild.style.display = 'block';
+        creditCardNumberInputField.parentElement.lastElementChild.innerHTML = 'Credit card number field cannot be blank';
+        return false;
+    } else if (!creditCardNumberRegex.test(creditCardNumberInputFieldValue)) {
+        creditCardNumberInputField.parentElement.classList.add('not-valid');
+        creditCardNumberInputField.parentElement.classList.remove('valid');
+        creditCardNumberInputField.parentElement.lastElementChild.style.display = 'block';
+        creditCardNumberInputField.parentElement.lastElementChild.innerHTML = 'Please enter a number that is between 13 and 16 digits long';
+        return false;
+    } else {
+        creditCardNumberInputField.parentElement.classList.add('valid');
+        creditCardNumberInputField.parentElement.classList.remove('not-valid');
+        creditCardNumberInputField.parentElement.lastElementChild.style.display = 'none';
+        return true;
+    }
+};
+
+// Create a function to validate the zip code input field
+const validateZipCode = () => {
+    const zipCodeInputFieldValue = zipCodeInputField.value;
+    const zipCodeRegex = /^\d{5}$/;
+
+    if (zipCodeInputFieldValue === '') {
+        zipCodeInputField.parentElement.classList.add('not-valid');
+        zipCodeInputField.parentElement.classList.remove('valid');
+        zipCodeInputField.parentElement.lastElementChild.style.display = 'block';
+        zipCodeInputField.parentElement.lastElementChild.innerHTML = 'Zip code field cannot be blank';
+        return false;
+    } else if (!zipCodeRegex.test(zipCodeInputFieldValue)) {
+        zipCodeInputField.parentElement.classList.add('not-valid');
+        zipCodeInputField.parentElement.classList.remove('valid');
+        zipCodeInputField.parentElement.lastElementChild.style.display = 'block';
+        zipCodeInputField.parentElement.lastElementChild.innerHTML = 'Please enter a 5 digit zip code';
+        return false;
+    } else {
+        zipCodeInputField.parentElement.classList.add('valid');
+        zipCodeInputField.parentElement.classList.remove('not-valid');
+        zipCodeInputField.parentElement.lastElementChild.style.display = 'none';
+        return true;
+    }
+};
+
+// Create a function to validate the CVV input field
+const validateCvv = () => {
+    const cvvInputFieldValue = cvvInputField.value;
+    const cvvRegex = /^\d{3}$/;
+
+    if (cvvInputFieldValue === '') {
+        cvvInputField.parentElement.classList.add('not-valid');
+        cvvInputField.parentElement.classList.remove('valid');
+        cvvInputField.parentElement.lastElementChild.style.display = 'block';
+        cvvInputField.parentElement.lastElementChild.innerHTML = 'CVV field cannot be blank';
+        return false;
+    } else if (!cvvRegex.test(cvvInputFieldValue)) {
+        cvvInputField.parentElement.classList.add('not-valid');
+        cvvInputField.parentElement.classList.remove('valid');
+        cvvInputField.parentElement.lastElementChild.style.display = 'block';
+        cvvInputField.parentElement.lastElementChild.innerHTML = 'Please enter a 3 digit CVV';
+        return false;
+    } else {
+        cvvInputField.parentElement.classList.add('valid');
+        cvvInputField.parentElement.classList.remove('not-valid');
+        cvvInputField.parentElement.lastElementChild.style.display = 'none';
+        return true;
+    }
+};
+
+// Listen for the submit event on the form element
 form.addEventListener('submit', (e) => {
-    if 
+    // Validate the name input field
+    validateName();
 
+    // Validate the email input field
+    validateEmail();
 
+    // Validate the activities checkboxes
+    validateActivities();
 
+    // Validate the credit card number input field
+    validateCreditCardNumber();
 
-// Real-time Validation for Email, Credit Card, Zip Code, CVV, and Name
-// Email
-const emailFeedbackElement = document.createElement('span');
-emailFeedbackElement.className = 'email-feedback';
-emailInput.insertAdjacentElement('afterend', emailFeedbackElement);
-emailInput.addEventListener('keyup', (e) => {
-    const validationMessage = isValidEmailFormat(e.target.value);
-    if (validationMessage !== true) {
-        emailInput.parentElement.classList.add('not-valid');
-        emailInput.parentElement.classList.remove('validation-checkmark');
-        emailFeedbackElement.textContent = validationMessage;
-        emailFeedbackElement.style.display = "block";
-    } else {
-        emailInput.parentElement.classList.remove('not-valid');
-        emailInput.parentElement.classList.add('validation-checkmark');
-        emailFeedbackElement.textContent = "";
-        emailFeedbackElement.style.display = "none";
+    // Validate the zip code input field
+    validateZipCode();
+
+    // Validate the CVV input field
+    validateCvv();
+
+    // Prevent the form from submitting if any of the fields are invalid
+    if (!validateName() || !validateEmail() || !validateActivities() || !validateCreditCardNumber() || !validateZipCode() || !validateCvv()) {
+        e.preventDefault();
     }
 });
 
-// Credit Card Number
-const cardNumberFeedbackElement = document.createElement('span');
-cardNumberFeedbackElement.className = 'card-number-feedback';
-cardNumberInput.insertAdjacentElement('afterend', cardNumberFeedbackElement);
-cardNumberInput.addEventListener('keyup', (e) => {
-    const validationMessage = isValidCardNumber(e.target.value);
-    if (validationMessage !== true) {
-        cardNumberInput.parentElement.classList.add('not-valid');
-        cardNumberInput.parentElement.classList.remove('validation-checkmark');
-        cardNumberFeedbackElement.textContent = validationMessage;
-        cardNumberFeedbackElement.style.display = "block";
-    } else {
-        cardNumberInput.parentElement.classList.remove('not-valid');
-        cardNumberInput.parentElement.classList.add('validation-checkmark');
-        cardNumberFeedbackElement.textContent = "";
-        cardNumberFeedbackElement.style.display = "none";
-    }
-});
-
-// Zip Code
-const zipFeedbackElement = document.createElement('span');
-zipFeedbackElement.className = 'zip-feedback';
-zipInput.insertAdjacentElement('afterend', zipFeedbackElement);
-zipInput.addEventListener('keyup', (e) => {
-    const validationMessage = isValidZip(e.target.value);
-    if (validationMessage !== true) {
-        zipInput.parentElement.classList.add('not-valid');
-        zipInput.parentElement.classList.remove('validation-checkmark');
-        zipFeedbackElement.textContent = validationMessage;
-        zipFeedbackElement.style.display = "block";
-    } else {
-        zipInput.parentElement.classList.remove('not-valid');
-        zipInput.parentElement.classList.add('validation-checkmark');
-        zipFeedbackElement.textContent = "";
-        zipFeedbackElement.style.display = "none";
-    }
-});
-
-// CVV
-const cvvFeedbackElement = document.createElement('span');
-cvvFeedbackElement.className = 'cvv-feedback';
-cvvInput.insertAdjacentElement('afterend', cvvFeedbackElement);
-cvvInput.addEventListener('keyup', (e) => {
-    const validationMessage = isValidCvv(e.target.value);
-    if (validationMessage !== true) {
-        cvvInput.parentElement.classList.add('not-valid');
-        cvvInput.parentElement.classList.remove('validation-checkmark');
-        cvvFeedbackElement.textContent = validationMessage;
-        cvvFeedbackElement.style.display = "block";
-    } else {
-        cvvInput.parentElement.classList.remove('not-valid');
-        cvvInput.parentElement.classList.add('validation-checkmark');
-        cvvFeedbackElement.textContent = "";
-        cvvFeedbackElement.style.display = "none";
-    }
-});
-
-// Name
-const nameFeedbackElement = document.createElement('span');
-nameFeedbackElement.className = 'name-feedback';
-nameInput.insertAdjacentElement('afterend', nameFeedbackElement);
-nameInput.addEventListener('keyup', function() {
-    if (isValidName(nameInput.value)) {
-        nameInput.parentElement.classList.add('validation-checkmark');
-    } else {
-        nameInput.parentElement.classList.remove('validation-checkmark');
-    }
-});
-
-// Accessibility Features
-activities.addEventListener('focus', (e) => {
-    if (e.target.type === 'checkbox') e.target.parentElement.classList.add('focus');
-}, true);
-activities.addEventListener('blur', (e) => {
-    if (e.target.type === 'checkbox') e.target.parentElement.classList.remove('focus');
-}, true);
-
-// Helper Validation Functions
-function isValidName(name) {
-    return /^[a-zA-Z]+ ?[a-zA-Z]*? ?[a-zA-Z]*?$/.test(name);
-}
-
-function isValidEmailFormat(email) {
-    return /^[^@]+@[^@.]+\.[a-z]+$/i.test(email);
-}
-
-function isValidCardNumber(cardNumber) {
-    if (!cardNumber) {
-        return "Please enter a credit card number.";
-    }
-    if (!/^\d+$/.test(cardNumber)) {
-        return "Credit card number must be numeric.";
-    }
-    if (!/^\d{13,16}$/.test(cardNumber)) {
-        return "Credit card number must be between 13 and 16 digits.";
-    }
-    return true;
-}
-
-function isValidZip(zip) {
-    if (!zip) {
-        return "Please enter a zip code.";
-    }
-    if (!/^\d+$/.test(zip)) {
-        return "Zip code must be numeric.";
-    }
-    if (zip.length !== 5) {
-        return "Zip code must be 5 digits.";
-    }
-    return true;
-}
-
-function isValidCvv(cvv) {
-    if (!cvv) {
-        return "Please enter a CVV.";
-    }
-    if (!/^\d+$/.test(cvv)) {
-        return "CVV must be numeric.";
-    }
-    if (cvv.length !== 3) {
-        return "CVV must be 3 digits.";
-    }
-    return true;
-}
-
-function isValidActivities() {
-    const checkedActivities = activities.querySelectorAll('input[type="checkbox"]:checked');
-    return checkedActivities.length > 0;
-}
-
-function isValidPayment() {
-    return paymentSelect.value !== 'select method';
-}
-
-
-
-
-
-
+/
