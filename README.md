@@ -11,5 +11,5 @@
 **Conditional Error Message for Email Field**
 1. To assist users in providing the correct information, conditional error messages for the email input field was added.
 2. If the email field is left empty, a prompt reminds the user to provide an email address.
-3. If an incorrectly formatted email address is entered, such as missing an "@" symbol or a domain, the system provides a specific message guiding the user to correct the mistake.
+3. If an incorrectly formatted email address is entered, such as missing an "@" symbol or a domain, the system provides a message to the user to correct the mistake.
 

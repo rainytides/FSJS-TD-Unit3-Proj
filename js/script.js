@@ -304,4 +304,9 @@ form.addEventListener('submit', (e) => {
     }
 });
 
-/
+// Listen for the focus event on the name input field
+nameInputField.addEventListener('focus', () => {
+    nameInputField.parentElement.classList.remove('not-valid');
+    nameInputField.parentElement.classList.remove('valid');
+    nameInputField.parentElement.lastElementChild.style.display = 'none';
+});
