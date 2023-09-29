@@ -310,3 +310,39 @@ nameInputField.addEventListener('focus', () => {
     nameInputField.parentElement.classList.remove('valid');
     nameInputField.parentElement.lastElementChild.style.display = 'none';
 });
+
+// Listen for the focus event on the email input field
+emailInputField.addEventListener('focus', () => {
+    emailInputField.parentElement.classList.remove('not-valid');
+    emailInputField.parentElement.classList.remove('valid');
+    emailInputField.parentElement.lastElementChild.style.display = 'none';
+});
+
+// Listen for the focus event on the activities checkboxes
+activitiesCheckboxesFieldset.addEventListener('focus', () => {
+    activitiesCheckboxesFieldset.firstElementChild.classList.remove('not-valid');
+    activitiesCheckboxesFieldset.firstElementChild.classList.remove('valid');
+    activitiesCheckboxesFieldset.lastElementChild.style.display = 'none';
+});
+
+// Listen for the focus event on the credit card number input field
+creditCardNumberInputField.addEventListener('focus', () => {
+    creditCardNumberInputField.parentElement.classList.remove('not-valid');
+    creditCardNumberInputField.parentElement.classList.remove('valid');
+    creditCardNumberInputField.parentElement.lastElementChild.style.display = 'none';
+});
+
+// Listen for the focus event on the zip code input field
+zipCodeInputField.addEventListener('focus', () => {
+    zipCodeInputField.parentElement.classList.remove('not-valid');
+    zipCodeInputField.parentElement.classList.remove('valid');
+    zipCodeInputField.parentElement.lastElementChild.style.display = 'none';
+});
+
+// Listen for the focus event on the CVV input field
+cvvInputField.addEventListener('focus', () => {
+    cvvInputField.parentElement.classList.remove('not-valid');
+    cvvInputField.parentElement.classList.remove('valid');
+    cvvInputField.parentElement.lastElementChild.style.display = 'none';
+});
+
