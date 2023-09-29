@@ -81,37 +81,10 @@ paymentSelect.addEventListener('change', (e) => {
 
 // Form Validation
 form.addEventListener('submit', (e) => {
-    if (!isValidName(nameInput.value)) {
-        e.preventDefault();
-        nameInput.parentElement.classList.add('not-valid');
-    }
-    if (!isValidEmailFormat(emailInput.value)) {
-        e.preventDefault();
-        emailInput.parentElement.classList.add('not-valid');
-    }
-    if (!isValidActivities()) {
-        e.preventDefault();
-        activities.classList.add('not-valid');
-    }
-    if (!isValidPayment()) {
-        e.preventDefault();
-        paymentSelect.parentElement.classList.add('not-valid');
-    }
-    if (paymentSelect.value === 'credit-card') {
-        if (!isValidCardNumber(cardNumberInput.value)) {
-            e.preventDefault();
-            cardNumberInput.parentElement.classList.add('not-valid');
-        }
-        if (!isValidZip(zipInput.value)) {
-            e.preventDefault();
-            zipInput.parentElement.classList.add('not-valid');
-        }
-        if (!isValidCvv(cvvInput.value)) {
-            e.preventDefault();
-            cvvInput.parentElement.classList.add('not-valid');
-        }
-    }
-});
+    if 
+
+
+
 
 // Real-time Validation for Email, Credit Card, Zip Code, CVV, and Name
 // Email
@@ -266,4 +239,9 @@ function isValidActivities() {
 function isValidPayment() {
     return paymentSelect.value !== 'select method';
 }
+
+
+
+
+
 
