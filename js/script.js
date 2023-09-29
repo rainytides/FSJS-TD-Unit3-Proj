@@ -48,44 +48,56 @@ designSelect.addEventListener('change', (e) => {
 // Create a variable to store the total cost of the activities selected
 let totalCost = 0;
 
-// Create a variable to store the activities checkboxes
+// Create variables to store elements and checkboxes
 const activitiesFieldset = document.getElementById('activities');
 const activitiesCheckboxes = activitiesFieldset.querySelectorAll('input[type="checkbox"]');
 const activitiesCost = document.getElementById('activities-cost');
 
+// Function to add focus and blur event listeners to checkboxes
+function addCheckboxFocusListeners() {
+    for (let checkbox of activitiesCheckboxes) {
+        // Listening for the focus event on each checkbox
+        checkbox.addEventListener('focus', function() {
+            this.parentElement.classList.add('focus');
+        });
+
+        // Listening for the blur event on each checkbox
+        checkbox.addEventListener('blur', function() {
+            this.parentElement.classList.remove('focus');
+        });
+    }
+}
+
+// Call the function to add focus listeners
+addCheckboxFocusListeners();
+
 // Listen for changes in the activities checkboxes
 activitiesFieldset.addEventListener('change', (e) => {
-    const activityCost = parseInt(e.target.getAttribute('data-cost'));
-    const activityChecked = e.target.checked;
+    const targetCheckbox = e.target;
+    const activityCost = parseInt(targetCheckbox.getAttribute('data-cost'));
+    const activityChecked = targetCheckbox.checked;
 
-    // Add or subtract the cost of the activity selected
-    if (activityChecked) {
-        totalCost += activityCost;
-    } else {
-        totalCost -= activityCost;
-    }
-
-    // Display the total cost of the activities selected
+    // Update and display the total cost of the activities selected
+    totalCost = activityChecked ? totalCost + activityCost : totalCost - activityCost;
     activitiesCost.innerHTML = `Total: $${totalCost}`;
 
     // Disable the activities that occur at the same time
-    const activityDayAndTime = e.target.getAttribute('data-day-and-time');
+    const activityDayAndTime = targetCheckbox.getAttribute('data-day-and-time');
 
-    for (let i = 0; i < activitiesCheckboxes.length; i++) {
-        const activityCheckbox = activitiesCheckboxes[i];
-        const activityCheckboxDayAndTime = activityCheckbox.getAttribute('data-day-and-time');
+    for (let checkbox of activitiesCheckboxes) {
+        const checkboxDayAndTime = checkbox.getAttribute('data-day-and-time');
 
-        if (activityDayAndTime === activityCheckboxDayAndTime && e.target !== activityCheckbox) {
+        if (activityDayAndTime === checkboxDayAndTime && targetCheckbox !== checkbox) {
+            checkbox.disabled = activityChecked;
             if (activityChecked) {
-                activityCheckbox.disabled = true;
-                activityCheckbox.parentElement.classList.add('disabled');
+                checkbox.parentElement.classList.add('disabled');
             } else {
-                activityCheckbox.disabled = false;
-                activityCheckbox.parentElement.classList.remove('disabled');
+                checkbox.parentElement.classList.remove('disabled');
             }
         }
     }
 });
+
 
 // Create a variable to store the payment select field
 const paymentSelect = document.getElementById('payment');
@@ -204,6 +216,7 @@ const validateActivities = () => {
 };
 
 // Create a function to validate the credit card number input field
+const creditCardDiv = document.querySelector("#credit-card");
 const validateCreditCardNumber = () => {
     const creditCardNumberInputFieldValue = creditCardNumberInputField.value;
     const creditCardNumberRegex = /^\d{13,16}$/;
@@ -304,45 +317,22 @@ form.addEventListener('submit', (e) => {
     }
 });
 
-// Listen for the focus event on the name input field
-nameInputField.addEventListener('focus', () => {
-    nameInputField.parentElement.classList.remove('not-valid');
-    nameInputField.parentElement.classList.remove('valid');
-    nameInputField.parentElement.lastElementChild.style.display = 'none';
-});
+// Real-time validation
 
-// Listen for the focus event on the email input field
-emailInputField.addEventListener('focus', () => {
-    emailInputField.parentElement.classList.remove('not-valid');
-    emailInputField.parentElement.classList.remove('valid');
-    emailInputField.parentElement.lastElementChild.style.display = 'none';
-});
+// Name
+nameInputField.addEventListener('input', validateName);
 
-// Listen for the focus event on the activities checkboxes
-activitiesCheckboxesFieldset.addEventListener('focus', () => {
-    activitiesCheckboxesFieldset.firstElementChild.classList.remove('not-valid');
-    activitiesCheckboxesFieldset.firstElementChild.classList.remove('valid');
-    activitiesCheckboxesFieldset.lastElementChild.style.display = 'none';
-});
+// Email
+emailInputField.addEventListener('input', validateEmail);
 
-// Listen for the focus event on the credit card number input field
-creditCardNumberInputField.addEventListener('focus', () => {
-    creditCardNumberInputField.parentElement.classList.remove('not-valid');
-    creditCardNumberInputField.parentElement.classList.remove('valid');
-    creditCardNumberInputField.parentElement.lastElementChild.style.display = 'none';
-});
+// Activities
+activitiesCheckboxesFieldset.addEventListener('change', validateActivities);
 
-// Listen for the focus event on the zip code input field
-zipCodeInputField.addEventListener('focus', () => {
-    zipCodeInputField.parentElement.classList.remove('not-valid');
-    zipCodeInputField.parentElement.classList.remove('valid');
-    zipCodeInputField.parentElement.lastElementChild.style.display = 'none';
-});
+// Credit Card Number
+creditCardNumberInputField.addEventListener('input', validateCreditCardNumber);
 
-// Listen for the focus event on the CVV input field
-cvvInputField.addEventListener('focus', () => {
-    cvvInputField.parentElement.classList.remove('not-valid');
-    cvvInputField.parentElement.classList.remove('valid');
-    cvvInputField.parentElement.lastElementChild.style.display = 'none';
-});
+// Zip Code
+zipCodeInputField.addEventListener('input', validateZipCode);
 
+// CVV
+cvvInputField.addEventListener('input', validateCvv);
