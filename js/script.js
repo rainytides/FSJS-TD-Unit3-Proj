@@ -294,25 +294,29 @@ const validateCvv = () => {
 // Listen for the submit event on the form element
 form.addEventListener('submit', (e) => {
     // Validate the name input field
-    validateName();
+    const nameValid = validateName();
 
     // Validate the email input field
-    validateEmail();
+    const emailValid = validateEmail();
 
     // Validate the activities checkboxes
-    validateActivities();
+   const activitiesValid = validateActivities();
 
     // Validate the credit card number input field
-    validateCreditCardNumber();
+    const creditCardValid = validateCreditCardNumber();
 
     // Validate the zip code input field
-    validateZipCode();
+    const zipCodeValid = validateZipCode();
 
     // Validate the CVV input field
-    validateCvv();
+    const cvvValid = validateCvv();
 
     // Prevent the form from submitting if any of the fields are invalid
-    if (!validateName() || !validateEmail() || !validateActivities() || !validateCreditCardNumber() || !validateZipCode() || !validateCvv()) {
+    if (!nameValid|| !emailValid || !activitiesValid) {
+        e.preventDefault();
+    }
+
+    if (paymentSelect.value === 'credit-card' && (!creditCardValid || !zipCodeValid || !cvvValid)) {
         e.preventDefault();
     }
 });
