@@ -94,16 +94,16 @@ const paymentSelectOptions = paymentSelect.children;
 // Hide the "Select Payment Method" option element in the "Payment Info" menu
 paymentSelectOptions[0].hidden = true;
 
+// Set "Credit Card" as the default selected option
+const creditCardOption = paymentSelect.querySelector('option[value="credit-card"]');
+creditCardOption.selected = true;
+
 // Hide the "PayPal" and "Bitcoin" div elements
 const paypalDiv = document.getElementById('paypal');
 paypalDiv.style.display = 'none';
 
 const bitcoinDiv = document.getElementById('bitcoin');
 bitcoinDiv.style.display = 'none';
-
-// Display the "Credit Card" div element by default
-const creditCardDiv = document.getElementById('credit-card');
-creditCardDiv.style.display = 'block';
 
 // Listen for changes in the payment select field
 paymentSelect.addEventListener('change', (e) => {
